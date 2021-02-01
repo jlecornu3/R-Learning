@@ -17,10 +17,10 @@ coeftest(ols)
 # Income - B^ = 0.87, T = 1.19 --> Insignificant
 
 # Impact of robust Ses - 
-coeftest(ols, vcov. = vcovHC, type = 'HC0')
+coeftest(ols, vcov. = vcovHC)
 
 # Cigarette prices - B^ = -0.85, T = -0.14 --> Insignificant
-# Income - B^ = 0.87, T = 1.46 --> Insignificant
+# Income - B^ = 0.87, T = 1.44 --> Insignificant
 
 
 ## Part b.) Repeat with a Poisson regression, exponential conditional mean rather than lm
@@ -43,9 +43,9 @@ cbind(OLS = OLS_est, Poisson_APE = ybar*pois_reg_est, Poisson = pois_reg_est)
 
 ## Part c.) Interpret again with sandwich form and compare
 
-coeftest(pois_reg, vcov. = vcovHC, type = 'HC0')
-# Cigarette prices - B^ = -0.11, P-val = 0.87
-# Income - B^ = -0.10, P-val = 0.2 --> Back to Insignificant now! 
+coeftest(pois_reg, vcov. = vcovHC)
+# Cigarette prices - B^ = -0.11, P-val = 0.88
+# Income - B^ = -0.10, P-val = 0.22 --> Back to Insignificant now! 
 pois_se <- coef(summary(pois_reg))[, 2][-1]
 ols_se <- coef(summary(ols))[, 2][-1]
 
@@ -58,12 +58,17 @@ summary(pois_reg)$dispersion
 # Does not display underdispersion = 1!
 
 # Impact of Quasi poisson variance assumption?
-quais_pois_reg <- glm(cig_model, 
+quasi_pois_reg <- glm(cig_model, 
                 family = quasipoisson(link = 'log'),
                 data = smoke)
 
 summary(quasi_pois_reg)$dispersion
 # Displays overdispersion > 1!
+
+# Repeat this by hand
+yhat <- predict(pois_reg, type = 'response')
+uhat <- residuals(pois_reg, type = 'response')
+mean(uhat^2/yhat)
 
 # Compare Results:
 quasi_pois_reg_est <- coefficients(quasi_pois_reg)[-1]
