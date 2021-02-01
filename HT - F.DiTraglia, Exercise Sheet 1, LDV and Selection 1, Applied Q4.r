@@ -4,7 +4,7 @@ library(lmtest)
 library(wooldridge)
 library(sandwich)
 
-## Part a.) Linear Regression
+## Part a.) Linear Regression ####
 names(smoke)
 cig_model <- cigs ~ lcigpric + lincome + restaurn + white + educ + age + agesq 
 ols <- lm(cig_model,
@@ -23,7 +23,7 @@ coeftest(ols, vcov. = vcovHC)
 # Income - B^ = 0.87, T = 1.44 --> Insignificant
 
 
-## Part b.) Repeat with a Poisson regression, exponential conditional mean rather than lm
+## Part b.) Repeat with a Poisson regression, exponential conditional mean rather than lm ####
 pois_reg <- glm(cig_model, 
                 family = poisson(link = 'log'),
                 data = smoke)
@@ -41,7 +41,7 @@ pois_reg_est <- coefficients(pois_reg)[-1]
 # Bind some columns together into a table
 cbind(OLS = OLS_est, Poisson_APE = ybar*pois_reg_est, Poisson = pois_reg_est)
 
-## Part c.) Interpret again with sandwich form and compare
+## Part c.) Interpret again with sandwich form and compare ####
 
 coeftest(pois_reg, vcov. = vcovHC)
 # Cigarette prices - B^ = -0.11, P-val = 0.88
@@ -53,7 +53,7 @@ ols_se <- coef(summary(ols))[, 2][-1]
 cbind(OLS = OLS_est, OLS_SE = ols_se, Poisson = pois_reg_est, pois_reg_se = pois_se, Poisson_APE = ybar*pois_reg_est)
 
 
-## Part d.) Calculate sigma_hat_2
+## Part d.) Calculate sigma_hat_2 ####
 summary(pois_reg)$dispersion
 # Does not display underdispersion = 1!
 
