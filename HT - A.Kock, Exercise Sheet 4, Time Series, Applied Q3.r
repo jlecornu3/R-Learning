@@ -19,6 +19,8 @@ nqa <- read_table2("ONS.txt")
 View(nqa)
 
 # Question 3a.) - what is variable AMBI2014_3 measuring? Units? Real? Nominal?
+describe(nqa$AMBI2014_3)
+summary(nqa$AMBI2014_3)
 
 # Question 3b.) Let y = log(Y) where Y is real gdp
 # Form the real growth rate (first difference)
