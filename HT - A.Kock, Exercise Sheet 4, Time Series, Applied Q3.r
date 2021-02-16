@@ -10,13 +10,27 @@ require(ggplot2)
 require("gridExtra")
 require("dplyr")
 require(broom)
+require(readxl)
 
 # Change Directory
 setwd("C:/Users/jleco/OneDrive - Nexus365/Oxford MPhil/Metrics/02. Exercise Sheets")
 
 # Read ONS Quarterly Accounts Data
-nqa <- read_table2("ONS.txt")
+nqa <- read_excel("ONS_NationalQuarterlyAccounts.xlsx")
 View(nqa)
+
+# Keep Columns IT and YU from Excel
+
+# Question 3a.) - what is variable AMBI2014_3 measuring? Units? Real? Nominal?
+# Quarterly National Account
+# Release 	23 Dec 2014
+# Downloaded	16 Jan 2015
+# ABMI
+# Gross Domestic Product: chained volume measures: Seasonally adjusted £m						
+# seasonal_adjustment='SA'						
+# base_period='2011'						
+# price='CONS'						
+# index_period
 
 # Question 3a.) - what is variable AMBI2014_3 measuring? Units? Real? Nominal?
 describe(nqa$AMBI2014_3)
