@@ -112,3 +112,8 @@ quantity_model <- lm(quantity_lm, data = fulton)
 stargazer(quantity_model,price_model, align=TRUE)
 summary(price_model)
 
+# Self AR on Price
+price_ar1 <- LogPrice ~ lag_price + 1
+price_ar_model <- lm(price_ar1, data = fulton)
+summary(price_ar_model)
+stargazer(price_ar_model, align=TRUE)
