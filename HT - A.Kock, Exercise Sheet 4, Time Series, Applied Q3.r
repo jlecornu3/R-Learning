@@ -11,6 +11,9 @@ require("gridExtra")
 require("dplyr")
 require(broom)
 require(readxl)
+require(lubridate)
+require(gridExtra)
+require(scales)
 
 # Change Directory
 setwd("C:/Users/jleco/OneDrive - Nexus365/Oxford MPhil/Metrics/02. Exercise Sheets")
@@ -23,7 +26,7 @@ View(nqa)
 
 # Question 3a.) - what is variable AMBI2014_3 measuring? Units? Real? Nominal?
 # Quarterly National Account
-# Release 	23 Dec 2014
+# Release 	23 Dec 2014=
 # Downloaded	16 Jan 2015
 # ABMI
 # Gross Domestic Product: chained volume measures: Seasonally adjusted £m						
@@ -32,18 +35,53 @@ View(nqa)
 # price='CONS'						
 # index_period
 
-# Question 3a.) - what is variable AMBI2014_3 measuring? Units? Real? Nominal?
-describe(nqa$AMBI2014_3)
-summary(nqa$AMBI2014_3)
-
 # Question 3b.) Let y = log(Y) where Y is real gdp
 # Form the real growth rate (first difference)
+nqa$row_num <- seq.int(nrow(nqa)) 
+quarters <- ts(nqa$row_num, start = c(1955, 1), frequency = 4)
+nqa$period <- ts(nqa$row_num, start = c(1955, 1), frequency = 4)
+
+#Drop Missings and create various variables of lags, difference etc.
+nqa_clean = nqa[!nqa$period >= 244,]
+nqa_clean$gdp <- nqa_clean$ABMI2015_3
+nqa_clean$log_gdp <- log(as.numeric(nqa_clean$ABMI2015_3))
+nqa_clean$lag_log_gdp <- Lag(nqa_clean$log_gdp)
+nqa_clean$real_growth_rate <- (nqa_clean$log_gdp - nqa_clean$lag_log_gdp)
+nqa_clean$lag_real_growth_rate <- Lag(nqa_clean$real_growth_rate)
+
+view(nqa_clean)
 
 # Question 3c.) Plot the first difference and discuss observations.
+first_diff_plot <- ggplot(nqa_clean, aes(x=period, y=real_growth_rate)) +
+  geom_line(colour = "black", size = 0.5) +
+  geom_hline(yintercept = 0, color = "red") +
+    labs(title = "First difference of quarterly log GDP (Real growth rate)",
+       subtitle = "ONS National Quarterly Accounts, 1955Q1 - 2015Q3",
+       tag = "Question 1c.",
+       x= "Time",
+       y="Real Growth Rate (First different of log price)"
+  )
+
+first_diff_plot
+ggsave("First Difference Plot.png")
 
 # Question 3d.) Fit an AR(1) model to first difference for 
 # i.) Full Sample
 # ii.) 1995 Q3 - 2005 Q3
+
+# Create Sample Splits
+nqa_clean_sub = nqa_clean[nqa_clean$period >= 163 & nqa_clean$period <= 203,]
+
+# Fit Models
+ar1_realgrowth <- real_growth_rate ~ lag_real_growth_rate + 1
+
+full_sample <- lm(ar1_realgrowth, data = nqa_clean)
+sub_sample <- lm(ar1_realgrowth, data = nqa_clean_sub)
+
+summary(full_sample)
+summary(sub_sample)
+
+stargazer(full_sample,sub_sample, align=TRUE)
 
 # Compute Long run mean
 
