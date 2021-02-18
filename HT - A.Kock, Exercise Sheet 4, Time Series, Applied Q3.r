@@ -17,9 +17,10 @@ require(scales)
 
 # Change Directory
 setwd("C:/Users/jleco/OneDrive - Nexus365/Oxford MPhil/Metrics/02. Exercise Sheets")
+wd <- "C:/Users/jleco/OneDrive - Nexus365/Oxford MPhil/Metrics/02. Exercise Sheets"
 
 # Read ONS Quarterly Accounts Data
-nqa <- read_excel("ONS_NationalQuarterlyAccounts.xlsx")
+nqa <- read_excel("Data/ONS_NationalQuarterlyAccounts.xlsx")
 View(nqa)
 
 # Keep Columns IT and YU from Excel
@@ -41,7 +42,7 @@ nqa$row_num <- seq.int(nrow(nqa))
 quarters <- ts(nqa$row_num, start = c(1955, 1), frequency = 4)
 nqa$period <- ts(nqa$row_num, start = c(1955, 1), frequency = 4)
 
-#Drop Missings and create various variables of lags, difference etc.
+#Drop Missings
 nqa_clean = nqa[!nqa$period >= 244,]
 nqa_clean$gdp <- nqa_clean$ABMI2015_3
 nqa_clean$log_gdp <- log(as.numeric(nqa_clean$ABMI2015_3))
@@ -63,7 +64,7 @@ first_diff_plot <- ggplot(nqa_clean, aes(x=period, y=real_growth_rate)) +
   )
 
 first_diff_plot
-ggsave("First Difference Plot.png")
+ggsave("Plots/First Difference Plot.png")
 
 # Question 3d.) Fit an AR(1) model to first difference for 
 # i.) Full Sample
@@ -84,8 +85,28 @@ summary(sub_sample)
 stargazer(full_sample,sub_sample, align=TRUE)
 
 # Compute Long run mean
+# Full Sample
+mu_full <- summary(full_sample)$coefficients[1,1]
+alpha_full <- summary(full_sample)$coefficients[2,1]
+long_run_full <- (mu_full)/(1-alpha_full)
+long_run_full
+
+# Sub Sample
+mu_sub <- summary(sub_sample)$coefficients[1,1]
+alpha_sub <- summary(sub_sample)$coefficients[2,1]
+long_run_sub <- (mu_sub)/(1-alpha_sub)
+long_run_sub
 
 # Compute long run standard deviation
+sigma_full <- summary(full_sample)$sigma
+LR_Var_full <- (sigma_full^2)/(1-(alpha_full)^2)
+LR_StdV_full <- LR_Var_full^0.5
+LR_StdV_full
+
+sigma_sub <- summary(sub_sample)$sigma
+LR_Var_sub <- (sigma_sub^2)/(1-(alpha_sub)^2)
+LR_StdV_sub <- LR_Var_sub^0.5
+LR_StdV_sub
 
 # Is it a good model?
 
