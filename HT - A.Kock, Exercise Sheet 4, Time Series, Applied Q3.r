@@ -237,4 +237,4 @@ ggplot.corr(data = nqa_clean$log_gdp, lag.max = 24, ci= 0.95, large.sample.size 
 ggplot.corr(data = loggdp_res, lag.max = 24, ci= 0.95, large.sample.size = FALSE, horizontal = TRUE) + 
   ggsave("Plots/GDP Residuals ACF and PACF.png")
 
-
+## Add in AK Solutions
